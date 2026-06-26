@@ -7,7 +7,7 @@ on:
         required: true
         type: string
     secrets:
-      GITOPS_TOKEN:
+      GIT_TOKEN:
         required: true
 
 permissions:
