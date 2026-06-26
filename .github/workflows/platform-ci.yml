@@ -101,5 +101,5 @@ jobs:
       image-uri: ${{ needs.ci.outputs.image-uri }}
   
     secrets:
-      gitops-token: ${{ secrets.GITOPS_TOKEN }}
+      gitops-token: ${{ secrets.GIT_TOKEN }}
 
