@@ -58,36 +58,36 @@ jobs:
         #    --location=asia-southeast1
   
       - name: Setup Java
-        uses: Dhana008/java-platform/actions/setup-java@develop
+        uses: Rajkumar06706/java-github/actions/setup-java@develop
         with:
           java-version: ${{ inputs.java-version }}
 
       - name: Build
-        uses: Dhana008/java-platform/actions/compile@develop
+        uses: Rajkumar06706/java-github/actions/compile@develop
 
       - name: Unit Test
-        uses: Dhana008/java-platform/actions/unit-test@develop
+        uses: Rajkumar06706/java-github/actions/unit-test@develop
 
       - name: Package
-        uses: Dhana008/java-platform/actions/package-jar@develop
+        uses: Rajkumar06706/java-github/actions/package-jar@develop
 
       - name: Generate SBOM
-        uses: Dhana008/java-platform/actions/generate-sbom@develop
+        uses: Rajkumar06706/java-github/actions/generate-sbom@develop
 
       - name: Build Container
-        uses: Dhana008/java-platform/actions/build-container@develop
+        uses: Rajkumar06706/java-github/actions/build-container@develop
 
       - name: Image Metadata
         id: image
-        uses: Dhana008/java-platform/actions/image-metadata@develop
+        uses: Rajkumar06706/java-github/actions/image-metadata@develop
         with:
           image-prefix: asia-southeast1-docker.pkg.dev/mimetic-retina-419011/platform-images/${{ github.event.repository.name }}
 
       - name: Trivy Scan
-        uses: Dhana008/java-platform/actions/trivy-scan@develop
+        uses: Rajkumar06706/java-github/actions/trivy-scan@develop
 
       - name: Push Image
-        uses: Dhana008/java-platform/actions/push-image@develop
+        uses: Rajkumar06706/java-github/actions/push-image@develop
         with:
           image-uri: ${{ steps.image.outputs.image-uri }}
 
@@ -95,7 +95,7 @@ jobs:
 
     needs: ci
   
-    uses: Dhana008/java-platform/.github/workflows/platform-cd.yml@develop
+    uses: Rajkumar06706/java-github/.github/workflows/platform-cd.yml@develop
   
     with:
       image-uri: ${{ needs.ci.outputs.image-uri }}
