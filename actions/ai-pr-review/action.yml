@@ -1,0 +1,16 @@
+name: AI review
+
+description: provide AI summary on PR
+
+runs:
+  using: composite
+
+  steps:
+
+    - name: Changed Files
+      shell: bash
+      run: |
+        echo "AI Review Summary"
+        echo "================="
+        git diff --name-only HEAD~1 HEAD
+

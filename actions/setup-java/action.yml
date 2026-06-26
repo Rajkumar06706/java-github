@@ -1,0 +1,19 @@
+name: Setup Java
+
+description: Setup Java and Maven cache
+
+inputs:
+  java-version:
+    required: true
+
+runs:
+  using: composite
+
+  steps:
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: ${{ inputs.java-version }}
+        cache: maven

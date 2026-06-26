@@ -1,0 +1,13 @@
+name: OWASP Dependency Check
+
+description: Software Composition Analysis
+
+runs:
+  using: composite
+
+  steps:
+    - name: Run OWASP Dependency Check
+      shell: bash
+      run: |
+        mvn org.owasp:dependency-check-maven:check \
+          -DfailBuildOnCVSS=7

@@ -1,0 +1,20 @@
+name: AI Review
+
+on:
+  workflow_call:
+
+jobs:
+
+  ai-review:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          
+      - name: AI PR Summary
+        uses: Dhana008/java-platform/actions/ai-pr-review@develop

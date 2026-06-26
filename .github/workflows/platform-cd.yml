@@ -1,0 +1,57 @@
+name: Platform CD
+
+on:
+  workflow_call:
+    inputs:
+      image-uri:
+        required: true
+        type: string
+
+    secrets:
+      gitops-token:
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+
+  update-gitops:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout GitOps Repo
+        uses: actions/checkout@v4
+        with:
+          repository: Dhana008/gitops-environments
+          token: ${{ secrets.gitops-token }}
+          path: gitops
+
+      #- name: Verify Inputs
+      #  shell: bash
+      #  run: |
+        #  echo "Image URI = ${{ inputs.image-uri }}"
+          
+      - name: Update Manifest
+        shell: bash
+        run: |
+
+          sed -i "s|image:.*|image: ${{ inputs.image-uri }}|g" \
+          gitops/applications/java-app-demo/dev/deployment.yaml
+
+      - name: Commit Changes
+        shell: bash
+        run: |
+
+          cd gitops
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add .
+
+          git commit -m "Deploy ${{ inputs.image-uri }} to DEV" || exit 0
+
+          git push

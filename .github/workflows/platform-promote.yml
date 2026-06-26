@@ -1,0 +1,67 @@
+name: Platform Promote
+
+on:
+  workflow_call:
+    inputs:
+
+      application:
+        required: true
+        type: string
+    
+      source-environment:
+        required: true
+        type: string
+    
+      target-environment:
+        required: true
+        type: string
+
+    secrets:
+      GITOPS_TOKEN:
+        required: true
+
+jobs:
+
+  promote:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout GitOps Repo
+        uses: actions/checkout@v4
+        with:
+          repository: Dhana008/gitops-environments
+          token: ${{ secrets.GITOPS_TOKEN }}
+          path: gitops
+
+      - name: Update Deployment Manifest
+        run: |
+
+          FILE="gitops/applications/${{ inputs.application }}/${{ inputs.target-environment }}/deployment.yaml"
+
+          echo "Updating $FILE"
+
+          SOURCE_FILE="gitops/applications/${{ inputs.application }}/${{ inputs.source-environment }}/deployment.yaml"
+          
+          TARGET_FILE="gitops/applications/${{ inputs.application }}/${{ inputs.target-environment }}/deployment.yaml"
+          
+          IMAGE_LINE=$(grep "^image:" "$SOURCE_FILE")
+          
+          echo "$IMAGE_LINE" > "$TARGET_FILE"
+          
+          cat "$TARGET_FILE"
+
+          cat "$FILE"
+
+      - name: Commit And Push
+        run: |
+          cd gitops
+
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add .
+
+          git commit -m "Promote ${{ inputs.application }} from ${{ inputs.source-environment }} to ${{ inputs.target-environment }}" || exit 0
+          git push

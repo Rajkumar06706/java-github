@@ -1,0 +1,45 @@
+name: Java Quality
+
+on:
+  workflow_call:
+    inputs:
+      java-version:
+        required: true
+        type: string
+
+jobs:
+
+  quality:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: Dhana008/java-platform/actions/setup-java@develop
+        with:
+          java-version: ${{ inputs.java-version }}
+
+      - name: Compile
+        uses: Dhana008/java-platform/actions/compile@develop
+
+      - name: Unit Test
+        uses: Dhana008/java-platform/actions/unit-test@develop
+
+      - name: JaCoCo
+        uses: Dhana008/java-platform/actions/jacoco@develop
+
+      - name: Upload JaCoCo Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco
+
+      - name: Spotless
+        uses: Dhana008/java-platform/actions/spotless@develop
+
+      - name: SpotBugs
+        uses: Dhana008/java-platform/actions/spotbugs@develop

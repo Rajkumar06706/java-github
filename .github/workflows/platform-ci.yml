@@ -1,0 +1,105 @@
+name: Platform CI
+
+on:
+  workflow_call:
+    inputs:
+      java-version:
+        required: true
+        type: string
+    secrets:
+      GITOPS_TOKEN:
+        required: true
+
+permissions:
+  id-token: write
+  contents: write
+  packages: write
+  pull-requests: write
+  actions: read
+  security-events: write
+  
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+
+  ci:
+
+    runs-on: ubuntu-latest
+    outputs:
+      image-uri: ${{ steps.image.outputs.image-uri }}
+
+    steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup GCloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for GAR
+        run: |
+          gcloud auth configure-docker asia-southeast1-docker.pkg.dev --quiet
+
+      - name: Verify GAR Authentication
+        run: |
+          gcloud auth print-access-token | head -c 20
+          echo ""
+
+      #- name: Verify GCP Access
+      #  run: |
+       #   gcloud artifacts repositories describe platform-images \
+        #    --location=asia-southeast1
+  
+      - name: Setup Java
+        uses: Dhana008/java-platform/actions/setup-java@develop
+        with:
+          java-version: ${{ inputs.java-version }}
+
+      - name: Build
+        uses: Dhana008/java-platform/actions/compile@develop
+
+      - name: Unit Test
+        uses: Dhana008/java-platform/actions/unit-test@develop
+
+      - name: Package
+        uses: Dhana008/java-platform/actions/package-jar@develop
+
+      - name: Generate SBOM
+        uses: Dhana008/java-platform/actions/generate-sbom@develop
+
+      - name: Build Container
+        uses: Dhana008/java-platform/actions/build-container@develop
+
+      - name: Image Metadata
+        id: image
+        uses: Dhana008/java-platform/actions/image-metadata@develop
+        with:
+          image-prefix: asia-southeast1-docker.pkg.dev/mimetic-retina-419011/platform-images/${{ github.event.repository.name }}
+
+      - name: Trivy Scan
+        uses: Dhana008/java-platform/actions/trivy-scan@develop
+
+      - name: Push Image
+        uses: Dhana008/java-platform/actions/push-image@develop
+        with:
+          image-uri: ${{ steps.image.outputs.image-uri }}
+
+  deploy-dev:
+
+    needs: ci
+  
+    uses: Dhana008/java-platform/.github/workflows/platform-cd.yml@develop
+  
+    with:
+      image-uri: ${{ needs.ci.outputs.image-uri }}
+  
+    secrets:
+      gitops-token: ${{ secrets.GITOPS_TOKEN }}
+

@@ -1,0 +1,20 @@
+name: Update Manifest
+
+description: Update deployment image
+
+inputs:
+  image-uri:
+    required: true
+
+  manifest-path:
+    required: true
+
+runs:
+  using: composite
+
+  steps:
+
+    - name: Update Manifest
+      shell: bash
+      run: |
+        sed -i "s|image:.*|image: ${{ inputs.image-uri }}|g" "${{ inputs.manifest-path }}"

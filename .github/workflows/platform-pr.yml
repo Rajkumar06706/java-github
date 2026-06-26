@@ -1,0 +1,26 @@
+name: Platform PR
+
+on:
+  workflow_call:
+    inputs:
+      java-version:
+        required: true
+        type: string
+jobs:
+
+  quality:
+    uses: Dhana008/java-platform/.github/workflows/java-quality-pr.yml@develop
+    with:
+      java-version: ${{ inputs.java-version }}
+
+  security:
+    uses: Dhana008/java-platform/.github/workflows/codeql-pr.yml@develop
+    with:
+      java-version: ${{ inputs.java-version }}
+
+  #ai-review:
+    #needs:
+     # - quality
+     # - security
+    #uses: Dhana008/java-platform/.github/workflows/ai-review-pr.yml@develop
+

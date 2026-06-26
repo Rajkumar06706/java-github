@@ -1,0 +1,12 @@
+name: JaCoCo Coverage
+
+description: Generate Coverage Report
+
+runs:
+  using: composite
+
+  steps:
+
+    - name: Generate Coverage Report
+      shell: bash
+      run: mvn jacoco:report

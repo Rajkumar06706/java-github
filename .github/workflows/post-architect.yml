@@ -1,0 +1,41 @@
+name: POST Architect
+
+on:
+  workflow_call:
+    secrets:
+      GEMINI_API_KEY:
+        required: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Debug PR Context
+        run: |
+          echo "BASE_REF=${{ github.base_ref }}"
+          echo "HEAD_REF=${{ github.head_ref }}"
+          echo "BASE_SHA=${{ github.event.pull_request.base.sha }}"
+          echo "HEAD_SHA=${{ github.event.pull_request.head.sha }}"
+
+      - name: Generate PR Diff
+        shell: bash
+        run: |
+          git diff \
+            ${{ github.event.pull_request.base.sha }} \
+            ${{ github.event.pull_request.head.sha }} \
+            > pr.diff
+
+      - name: Run POST Architect
+        uses: Dhana008/java-platform/actions/post-architect@develop
+        with:
+          gemini-api-key: ${{ secrets.GEMINI_API_KEY }}

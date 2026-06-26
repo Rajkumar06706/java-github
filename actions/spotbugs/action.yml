@@ -1,0 +1,12 @@
+name: SpotBugs
+
+description: Execute SpotBugs Static Analysis
+
+runs:
+  using: composite
+
+  steps:
+
+    - name: SpotBugs Check
+      shell: bash
+      run: mvn spotbugs:check

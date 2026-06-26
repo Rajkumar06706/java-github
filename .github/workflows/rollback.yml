@@ -1,0 +1,109 @@
+name: Rollback Previous Release
+
+on:
+  workflow_call:
+    inputs:
+      gitops_repo:
+        required: true
+        type: string
+
+      deployment_file:
+        required: true
+        type: string
+
+      rollback_mode:
+        required: true
+        type: string
+
+      image_tag:
+        required: false
+        type: string
+
+    secrets:
+      GITOPS_TOKEN:
+        required: true
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout GitOps Repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.gitops_repo }}
+          token: ${{ secrets.GITOPS_TOKEN }}
+          path: gitops
+          fetch-depth: 50
+
+      - name: Perform Rollback
+        run: |
+          cd gitops
+      
+          CURRENT_IMAGE=$(grep "image:" \
+            ${{ inputs.deployment_file }} | awk '{print $2}')
+      
+          echo ""
+          echo "Current Image:"
+          echo "$CURRENT_IMAGE"
+      
+          if [ "${{ inputs.rollback_mode }}" = "manual" ]; then
+      
+            #TARGET_IMAGE="asia-southeast1-docker.pkg.dev/mimetic-retina-419011/platform-images/java-app-demo:${{ inputs.image_tag }}"
+            TARGET_IMAGE="${{ inputs.image_tag }}"
+            echo ""
+            echo "Rollback Mode : MANUAL"
+            echo "Target Image  : $TARGET_IMAGE"
+      
+            sed -i \
+              "s#^\([[:space:]]*image:[[:space:]]*\).*#\1$TARGET_IMAGE#" \
+              ${{ inputs.deployment_file }}
+      
+          else
+      
+            PREVIOUS_COMMIT=$(git log \
+              --grep="Deploy" \
+              --format="%H" \
+              -- ${{ inputs.deployment_file }} \
+              | sed -n '2p')
+      
+            PREVIOUS_IMAGE=$(git show \
+              ${PREVIOUS_COMMIT}:${{ inputs.deployment_file }} \
+              | grep "image:" \
+              | awk '{print $2}')
+      
+            echo ""
+            echo "Rollback Mode : PREVIOUS"
+            echo "Previous Image:"
+            echo "$PREVIOUS_IMAGE"
+      
+            git checkout $PREVIOUS_COMMIT -- \
+              ${{ inputs.deployment_file }}
+      
+          fi
+      
+          echo ""
+          echo "Deployment after rollback:"
+          grep image: ${{ inputs.deployment_file }}
+
+      - name: Verify Changes
+        run: |
+          cd gitops
+          git diff
+
+      - name: Commit Rollback
+        run: |
+          cd gitops
+
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add .
+
+          git commit -m \
+            "Rollback deployment to previous release"
+
+      - name: Push Changes
+        run: |
+          cd gitops
+          git push

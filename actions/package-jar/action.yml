@@ -1,0 +1,12 @@
+name: Package JAR
+
+description: Build application artifact
+
+runs:
+  using: composite
+
+  steps:
+
+    - name: Package Application
+      shell: bash
+      run: mvn clean package

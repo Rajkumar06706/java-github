@@ -1,0 +1,12 @@
+name: Spotless
+
+description: Execute Spotless Formatting Validation
+
+runs:
+  using: composite
+
+  steps:
+
+    - name: Spotless Check
+      shell: bash
+      run: mvn spotless:check

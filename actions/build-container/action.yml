@@ -1,0 +1,13 @@
+name: Build Container
+
+description: Build Docker Image
+
+runs:
+  using: composite
+
+  steps:
+
+    - name: Build Image
+      shell: bash
+      run: |
+        docker build -t app:${GITHUB_SHA} .

@@ -1,0 +1,12 @@
+name: Compile Java
+
+description: Compile Java application
+
+runs:
+  using: composite
+
+  steps:
+
+    - name: Maven Compile
+      shell: bash
+      run: mvn clean compile

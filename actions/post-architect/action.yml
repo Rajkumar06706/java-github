@@ -1,0 +1,31 @@
+name: POST Architect
+description: AI-powered PR review using POST standards
+
+inputs:
+  gemini-api-key:
+    description: Gemini API Key
+    required: true
+
+runs:
+  using: composite
+
+  steps:
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Install Dependencies
+      shell: bash
+      run: |
+        pip install -r "${{ github.action_path }}/requirements.txt"
+
+    - name: Run POST Architect
+      shell: bash
+      env:
+        GEMINI_API_KEY: ${{ inputs.gemini-api-key }}
+        ACTION_PATH: ${{ github.action_path }}
+        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+      run: |
+        python "${{ github.action_path }}/review.py"

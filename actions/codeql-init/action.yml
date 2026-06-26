@@ -1,0 +1,13 @@
+name: CodeQL Init
+
+description: Initialize CodeQL
+
+runs:
+  using: composite
+
+  steps:
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: java

@@ -1,0 +1,11 @@
+name: CodeQL Analyze
+
+description: Execute CodeQL Analysis
+
+runs:
+  using: composite
+
+  steps:
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3

@@ -1,0 +1,13 @@
+name: Generate SBOM
+
+description: Generate CycloneDX SBOM
+
+runs:
+  using: composite
+
+  steps:
+
+    - name: Generate SBOM
+      shell: bash
+      run: |
+        mvn org.cyclonedx:cyclonedx-maven-plugin:makeAggregateBom

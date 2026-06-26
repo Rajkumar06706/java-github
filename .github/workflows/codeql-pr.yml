@@ -1,0 +1,39 @@
+name: CodeQL Security
+
+on:
+  workflow_call:
+    inputs:
+      java-version:
+        required: true
+        type: string
+
+
+jobs:
+
+  code-security:
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: Dhana008/java-platform/actions/setup-java@develop
+        with:
+          java-version: ${{ inputs.java-version }}
+
+      - name: CodeQL Init
+        uses: Dhana008/java-platform/actions/codeql-init@develop
+
+      - name: Compile
+        uses: Dhana008/java-platform/actions/compile@develop
+
+      - name: CodeQL Analyze
+        uses: Dhana008/java-platform/actions/codeql-analyze@develop

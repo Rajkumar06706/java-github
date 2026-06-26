@@ -1,0 +1,12 @@
+name: Unit Test
+
+description: Execute Maven Unit Tests
+
+runs:
+  using: composite
+
+  steps:
+
+    - name: Maven Test
+      shell: bash
+      run: mvn test
