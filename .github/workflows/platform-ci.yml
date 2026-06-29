@@ -81,7 +81,7 @@ jobs:
         id: image
         uses: Rajkumar06706/java-github/actions/image-metadata@main
         with:
-          image-prefix: asia-southeast1-docker.pkg.dev/mimetic-retina-419011/platform-images/${{ github.event.repository.name }}
+          image-prefix: asia-southeast1-docker.pkg.dev/rajgcp-499007/platform-images/${{ github.event.repository.name }}
 
       - name: Trivy Scan
         uses: Rajkumar06706/java-github/actions/trivy-scan@main
