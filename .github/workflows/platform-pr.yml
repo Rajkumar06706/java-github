@@ -9,12 +9,12 @@ on:
 jobs:
 
   quality:
-    uses: Dhana008/java-platform/.github/workflows/java-quality-pr.yml@develop
+    uses: Rajkumar06706/java-github/.github/workflows/java-quality-pr.yml@main
     with:
       java-version: ${{ inputs.java-version }}
 
   security:
-    uses: Dhana008/java-platform/.github/workflows/codeql-pr.yml@develop
+    uses: Rajkumar06706/java-github/.github/workflows/codeql-pr.yml@main
     with:
       java-version: ${{ inputs.java-version }}
 
@@ -22,5 +22,5 @@ jobs:
     #needs:
      # - quality
      # - security
-    #uses: Dhana008/java-platform/.github/workflows/ai-review-pr.yml@develop
+    #uses: Rajkumar06706/java-github/.github/workflows/ai-review-pr.yml@main
 
