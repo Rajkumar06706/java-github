@@ -36,6 +36,6 @@ jobs:
             > pr.diff
 
       - name: Run POST Architect
-        uses: Dhana008/java-platform/actions/post-architect@develop
+        uses: Rajkumar06706/java-github/actions/post-architect@develop
         with:
           gemini-api-key: ${{ secrets.GEMINI_API_KEY }}
